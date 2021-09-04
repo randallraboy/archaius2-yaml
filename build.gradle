@@ -1,12 +1,13 @@
-
 plugins {
     id 'java-library'
+    id 'maven-publish'
 }
 
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 
-version = "0.0.1"
+group = 'com.randallraboy.archaius'
+version = '0.0.1-SNAPSHOT'
 
 repositories {
     mavenCentral()
@@ -22,6 +23,11 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.7.1'
 }
 
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
 test {
     useJUnitPlatform()
 }
@@ -30,4 +36,64 @@ gradle.projectsEvaluated {
     tasks.withType(JavaCompile) {
         options.compilerArgs << "-Xlint:unchecked"
     }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+            pom {
+                name = 'archaius2-yaml'
+                description = 'An archaius2 extension that provides reading a YAML configuration'
+                url = 'https://github.com/randallraboy/archaius2-yaml'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'rraboy'
+                        name = 'Randall Raboy'
+                        email = 'contact@randallraboy.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:ssh://git@github.com:randallraboy/archaius2-yaml.git'
+                    developerConnection = 'scm:git:ssh://git@github.com:randallraboy/archaius2-yaml.git'
+                    url = 'https://github.com/randallraboy/archaius2-yaml'
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            def releasesRepoUrl = 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2'
+            def snapshotsRepoUrl = 'https://s01.oss.sonatype.org/content/repositories/snapshots'
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            credentials {
+                username findProperty('publishing.sonatype.username')
+                password findProperty('publishing.sonatype.password')
+            }
+        }
+    }
+}
+
+javadoc {
+    if(JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
+}
+
+wrapper {
+    gradleVersion = '7.2'
 }

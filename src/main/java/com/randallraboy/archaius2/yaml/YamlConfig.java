@@ -22,6 +22,36 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.BiConsumer;
 
+/**
+ * <p>
+ * Implementation of {@link Config} that can read of a YAML configuration.
+ * </p>
+ * <p>
+ * Some implementation specific based on how to translate YAML configuration into Archaius model:
+ * </p>
+ * <ol>
+ *     <li>Any primitives(int, string, long, float) will be represented as {@link String} value</li>
+ *     <li>"null" or any form of YAML's null will be java null</li>
+ *     <li>
+ *         A YAML List(e.g [1,2,3], or a list of objects) will be represented as is, that is in a YAML list compact form.
+ *         Example:
+ *         <pre>
+ *             # YAML form
+ *             configs:
+ *              - test1:
+ *                  name: test1
+ *              - test2:
+ *                  name: test2
+ *
+ *             # when retrieving via Config.get('configs') will return:
+ *                 [test1: { name: test1 }, test2: { name: test2 }
+ *         </pre>
+ *     </li>
+ * </ol>
+ *
+ * @see #fromInputStream(String, InputStream)
+ * @see #fromReader(String, Reader)
+ */
 public class YamlConfig implements Config {
     private final Config mapConfig;
 
@@ -254,10 +284,27 @@ public class YamlConfig implements Config {
         return mapConfig.isEmpty();
     }
 
+    /**
+     * Reads a YAML configuration from the given {@link InputStream}. This will assume that the stream can be decoded
+     * in UTF-8.
+     *
+     * @param configName  a non-null non-empty configuration name.
+     * @param inputStream a non-null {@link InputStream}. It is up to caller to close this {@link InputStream}
+     * @return an instance of {@link Config}
+     * @throws IOException if there's an error parsing
+     */
     public static Config fromInputStream(final String configName, @WillNotClose final InputStream inputStream) throws IOException {
         return fromReader(configName, new InputStreamReader(inputStream, StandardCharsets.UTF_8));
     }
 
+    /**
+     * Reads a YAML configuration from the given {@link Reader}.
+     *
+     * @param configName a non-null non-empty configuration name.
+     * @param reader     a non-null {@link Reader}. It is up to caller to close this {@link Reader}
+     * @return an instance of {@link Config}
+     * @throws IOException if there's an error parsing
+     */
     public static Config fromReader(final String configName, @WillNotClose Reader reader) throws IOException {
         try {
             DumperOptions dumperOptions = new DumperOptions();
