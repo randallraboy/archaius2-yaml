@@ -1,0 +1,33 @@
+
+plugins {
+    id 'java-library'
+}
+
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
+
+version = "0.0.1"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    api 'com.netflix.archaius:archaius2-api:2.3.16'
+
+    implementation 'com.netflix.archaius:archaius2-core:2.3.16'
+    implementation 'com.google.guava:guava:30.1-jre'
+    implementation 'org.yaml:snakeyaml:1.29'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.7.1'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+gradle.projectsEvaluated {
+    tasks.withType(JavaCompile) {
+        options.compilerArgs << "-Xlint:unchecked"
+    }
+}
