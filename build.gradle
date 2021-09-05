@@ -5,11 +5,12 @@ plugins {
     id 'jacoco'
 }
 
+apply from: 'version.gradle'
+
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 
 group = 'com.randallraboy.archaius'
-version = '0.0.1-SNAPSHOT'
 
 defaultTasks 'clean', 'build'
 
@@ -25,6 +26,12 @@ dependencies {
     implementation 'org.yaml:snakeyaml:1.29'
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.7.1'
+}
+
+task blah {
+    doLast {
+        Task.class.getClassLoader().get
+    }
 }
 
 java {

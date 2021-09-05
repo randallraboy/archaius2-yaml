@@ -9,17 +9,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Set up JDK 11
+      - name: calculate version
+        run: ./.github/scripts/calc_version.sh
+
+      - name: setup jdk-11
         uses: actions/setup-java@v2
         with:
           java-version: '11'
           distribution: 'adopt'
           cache: 'gradle'
 
-      - name: Build with Gradle
+      - name: setup sops
+        uses: mdgreenwald/mozilla-sops-action@v1.1.0
+
+      - name: build, test, and generate jacoco report
         run: ./gradlew clean build jacocoTestReport -i --stacktrace
 
-      - name: Publish Unit Test Results
+      - name: publish unit-test results
         uses: EnricoMi/publish-unit-test-result-action@v1
         if: always()
         with:
@@ -29,3 +35,23 @@ jobs:
         with:
           files: build/reports/jacoco/report.xml
           verbose: true
+
+      - name: sops decrypt
+        if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+        run: |
+          sops --version
+          mkdir -p ~/.gnupg/
+          echo "${{ secrets.SOPS_GPG_SECRING_BASE64 }}" | base64 -d > ~/.gnupg/secring.gpg
+          gpg --list-keys
+
+          # to unlock gpg: https://github.com/mozilla/sops/issues/370#issuecomment-411733767
+          echo "${{ secrets.SOPS_GPG_PASSWORD }}" > key.txt
+          touch dummy.txt
+          gpg --batch --yes --passphrase-file key.txt --pinentry-mode=loopback -s dummy.txt # sign dummy file to unlock agent
+
+          sops -d gradle.properties.sops > gradle.properties
+
+      - name: sign and publish
+        if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+        run: ./gradlew publish -i --stacktrace
+

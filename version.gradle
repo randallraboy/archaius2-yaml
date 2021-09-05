@@ -1,0 +1,9 @@
+
+def calcVersion() {
+    def props = new Properties()
+    file("version.properties").withInputStream { props.load(it) }
+    def ver = props.getProperty('version')
+    if(!ver) throw new GradleScriptException("missing version, please provide version in version.properties", null)
+    return ver
+}
+version = calcVersion()
