@@ -1,5 +1,7 @@
 # archaius2-yaml
 
+[![Build and Test](https://github.com/randallraboy/archaius2-yaml/actions/workflows/build-test.yaml/badge.svg?branch=main)](https://github.com/randallraboy/archaius2-yaml/actions/workflows/build-test.yaml)
+
 [Archaius2](https://github.com/Netflix/archaius) extension that adds support for reading YAML configuration.
 
 ## Building
