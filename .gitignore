@@ -1,6 +1,8 @@
 
 # any decrypted file
 *.dec.*.sops
+# gradle.properties contain secrets should never be committed
+gradle.properties
 
 # Created by https://www.toptal.com/developers/gitignore/api/gradle,java,intellij
 # Edit at https://www.toptal.com/developers/gitignore?templates=gradle,java,intellij

@@ -1,6 +1,7 @@
 plugins {
     id 'java-library'
     id 'maven-publish'
+    id 'signing'
 }
 
 sourceCompatibility = JavaVersion.VERSION_11
@@ -8,6 +9,8 @@ targetCompatibility = JavaVersion.VERSION_11
 
 group = 'com.randallraboy.archaius'
 version = '0.0.1-SNAPSHOT'
+
+defaultTasks 'clean', 'build'
 
 repositories {
     mavenCentral()
@@ -35,6 +38,12 @@ test {
 gradle.projectsEvaluated {
     tasks.withType(JavaCompile) {
         options.compilerArgs << "-Xlint:unchecked"
+    }
+}
+
+javadoc {
+    if(JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
     }
 }
 
@@ -88,10 +97,12 @@ publishing {
     }
 }
 
-javadoc {
-    if(JavaVersion.current().isJava9Compatible()) {
-        options.addBooleanOption('html5', true)
-    }
+signing {
+    def signingKeyId = findProperty("signingKeyId")
+    def signingKey = findProperty("signingKey")
+    def signingPassword = findProperty("signingPassword")
+    useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+    sign publishing.publications.mavenJava
 }
 
 wrapper {

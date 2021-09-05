@@ -1,13 +1,3 @@
 creation_rules:
   - path_regex: \.sops$
     pgp: 7D948E4950A69BCEBA2DBBDF6639A7494509C6D7
-  - path_regex: \.pkcs7\.pem$
-    pgp: 7D948E4950A69BCEBA2DBBDF6639A7494509C6D7
-  - path_regex: \.sops\.tgz$
-    pgp: 7D948E4950A69BCEBA2DBBDF6639A7494509C6D7
-  - path_regex: \.sops\.pem$
-    pgp: 7D948E4950A69BCEBA2DBBDF6639A7494509C6D7
-  - path_regex: \.sops\.yaml$
-    pgp: 7D948E4950A69BCEBA2DBBDF6639A7494509C6D7
-  - path_regex: \.sops\.json$
-    pgp: 7D948E4950A69BCEBA2DBBDF6639A7494509C6D7
